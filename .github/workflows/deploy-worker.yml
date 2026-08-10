@@ -1,0 +1,41 @@
+name: Deploy Worker (lmg-auth)
+
+# Produção: push/merge na branch main → publica o Worker "lmg-auth"
+# Homologação: push na branch staging → publica o Worker "lmg-auth-staging"
+#
+# Requer dois secrets no repositório (Settings → Secrets and variables →
+# Actions → New repository secret), veja HOMOLOGACAO.md:
+#   CLOUDFLARE_API_TOKEN   (token com permissão "Edit Cloudflare Workers")
+#   CLOUDFLARE_ACCOUNT_ID
+
+on:
+  push:
+    branches: [main, staging]
+    paths:
+      - 'worker/**'
+      - '.github/workflows/deploy-worker.yml'
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to production
+        if: github.ref == 'refs/heads/main'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: worker
+          command: deploy
+
+      - name: Deploy to staging
+        if: github.ref == 'refs/heads/staging'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: worker
+          command: deploy --env staging

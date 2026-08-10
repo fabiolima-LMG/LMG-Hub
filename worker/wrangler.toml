@@ -1,0 +1,28 @@
+# Configuração do Worker de autenticação do LMG Hub
+#
+# Dois ambientes:
+#   produção   → nome "lmg-auth"          → npx wrangler deploy
+#   homologação→ nome "lmg-auth-staging"  → npx wrangler deploy --env staging
+#
+# Cada ambiente tem seu PRÓPRIO namespace KV (bancos de usuário separados —
+# contas de teste em homologação nunca aparecem em produção).
+# Depois de rodar `wrangler kv namespace create USERS` (produção) e
+# `wrangler kv namespace create USERS --env staging` (homologação),
+# cole os ids gerados nos lugares indicados abaixo.
+
+name = "lmg-auth"
+main = "lmg-auth-worker.js"
+compatibility_date = "2024-11-01"
+
+# ── PRODUÇÃO ──────────────────────────────────────────────
+[[kv_namespaces]]
+binding = "USERS"
+id = "COLE_AQUI_O_ID_DO_KV_PRODUCAO"
+
+# ── HOMOLOGAÇÃO ───────────────────────────────────────────
+[env.staging]
+name = "lmg-auth-staging"
+
+[[env.staging.kv_namespaces]]
+binding = "USERS"
+id = "COLE_AQUI_O_ID_DO_KV_STAGING"
