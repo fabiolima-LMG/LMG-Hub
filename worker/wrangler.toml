@@ -26,3 +26,4 @@ name = "lmg-auth-staging"
 [[env.staging.kv_namespaces]]
 binding = "USERS"
 id = "ddfa4b30010e4b72bcef67d42939e3b3"
+# teste do deploy automático
